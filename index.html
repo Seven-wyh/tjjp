@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>智飞 · 特价机票发现平台</title>
+    
+    <!-- 添加基础路径标记，适配 GitHub Pages -->
+    <base href="/">
+    
+    <!-- Font Awesome (icons) - 使用稳定CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- 添加 favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+        }
+        body {
+            background: #f4f7fc;
+            padding: 16px 12px 32px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            background: #1e3c72;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 6px 12px rgba(28, 60, 120, 0.15);
+        }
+        .logo-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0b1e33;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .logo-text span {
+            font-size: 0.85rem;
+            color: #4a5c6f;
+            font-weight: 400;
+        }
+        .badge-pm {
+            background: #e9ecf3;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #1e3c72;
+            font-weight: 500;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+            border: 1px solid #cdd9e6;
+        }
+        .badge-pm i {
+            margin-right: 6px;
+            color: #2a6f97;
+        }
+
+        /* GitHub Pages 部署提示横幅 */
+        .deploy-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .deploy-banner i {
+            font-size: 1.3rem;
+        }
+        .deploy-banner a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .deploy-banner a:hover {
+            text-decoration: underline;
+        }
+
+        /* 核心搜索卡 */
+        .search-card {
+            background: white;
+            border-radius: 28px;
+            padding: 24px 22px;
+            box-shadow: 0 12px 30px rgba(0, 10, 30, 0.08);
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(2px);
+        }
+        .fuzzy-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .fuzzy-label h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0f263b;
+        }
+        .fuzzy-badge {
+            background: #eef6ff;
+            color: #0a58ca;
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px dashed #0a58ca;
+        }
+        .fuzzy-badge i {
+            margin-right: 6px;
+        }
+
+        .search-box-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafd;
+            border-radius: 60px;
+            padding: 6px 6px 6px 20px;
+            border: 1.5px solid #d9e2ef;
+            transition: all 0.2s;
+        }
+        .search-box-wrapper:focus-within {
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 4px rgba(30,60,114,0.1);
+            background: white;
+        }
+        .search-icon {
+            color: #6f7e91;
+            font-size: 1.1rem;
+        }
+        .search-box-wrapper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 14px 5px;
+            font-size: 1rem;
+            outline: none;
+            min-width: 200px;
+        }
+        .search-box-wrapper input::placeholder {
+            color: #8b9aae;
+            font-weight: 300;
+            font-style: italic;
+        }
+        .search-btn {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(30,60,114,0.25);
+            white-space: nowrap;
+        }
+        .search-btn:hover {
+            background: #102a4e;
+            transform: scale(1.01);
+        }
+        .fuzzy-hint {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            color: #4e627c;
+            font-size: 0.85rem;
+        }
+        .fuzzy-hint i {
+            margin-right: 6px;
+            color: #2a6f97;
+            width: 18px;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .fuzzy-tag {
+            background: white;
+            border: 1px solid #cbd6e4;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            color: #1a344d;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .fuzzy-tag i {
+            margin-right: 6px;
+            color: #1e3c72;
+        }
+        .fuzzy-tag:hover {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+        .fuzzy-tag:hover i {
+            color: white;
+        }
+
+        /* 结果区域 */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 24px 0 16px;
+        }
+        .results-header h3 {
+            font-weight: 600;
+            color: #152b42;
+            font-size: 1.3rem;
+        }
+        .results-header h3 i {
+            margin-right: 8px;
+            color: #1e3c72;
+        }
+        .sort-badge {
+            font-size: 0.8rem;
+            background: #e2eaf3;
+            padding: 6px 12px;
+            border-radius: 30px;
+            color: #0b2a44;
+        }
+
+        .flight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        .flight-card {
+            background: white;
+            border-radius: 24px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e3eaf2;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .flight-card:hover {
+            box-shadow: 0 14px 28px rgba(26, 67, 113, 0.08);
+            border-color: #b9cee8;
+        }
+        .route-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .dep, .arr {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #0b1e2e;
+        }
+        .dep i, .arr i {
+            font-size: 0.9rem;
+            color: #4f6f8f;
+            margin-right: 4px;
+        }
+        .arrow-icon {
+            color: #859eb3;
+            font-size: 1.2rem;
+        }
+        .date-info {
+            color: #4a657d;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px dashed #d2dee9;
+            padding-bottom: 10px;
+        }
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 8px 0 10px;
+        }
+        .price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e3c72;
+            line-height: 1;
+        }
+        .price small {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #55708b;
+        }
+        .airline {
+            color: #366188;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: #ecf3fa;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        /* 平台跳转 */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .btn-ota {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.15s;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,20,50,0.1);
+        }
+        .btn-ota i {
+            font-size: 0.9rem;
+        }
+        .btn-ota:hover {
+            background: #0f2a4a;
+        }
+        .btn-xianyu {
+            background: #fef4e8;
+            color: #c45d00;
+            border: 1px solid #ffd7ae;
+            border-radius: 60px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.15s;
+            text-decoration: none;
+            flex: 1;
+        }
+        .btn-xianyu i {
+            color: #ff7b00;
+        }
+        .btn-xianyu:hover {
+            background: #ffe8d4;
+            border-color: #e6953c;
+        }
+
+        /* 合规风险提示 */
+        .risk-footer {
+            background: #fef9e7;
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-top: 28px;
+            border-left: 6px solid #ffb347;
+            color: #5e4300;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+        .risk-footer i {
+            font-size: 1.5rem;
+            color: #e68a2e;
+        }
+        .risk-footer .content {
+            flex: 1;
+        }
+        .risk-footer strong {
+            color: #824d00;
+        }
+
+        /* 闲鱼提示 */
+        .tips-panel {
+            background: #e9f2fa;
+            border-radius: 18px;
+            padding: 14px 20px;
+            margin: 20px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1f4973;
+            border: 1px solid #bed9f2;
+        }
+        .tips-panel i {
+            font-size: 1.6rem;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            text-align: center;
+            color: #687e94;
+            font-size: 0.8rem;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: #6f85a0;
+            background: white;
+            border-radius: 28px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 560px) {
+            .search-box-wrapper {
+                border-radius: 30px;
+                padding-left: 16px;
+            }
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+                margin-top: 4px;
+            }
+            .badge-pm {
+                display: none;
+            }
+            .logo-text h1 {
+                font-size: 1.3rem;
+            }
+            .deploy-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- GitHub Pages 部署成功提示 -->
+    <div class="deploy-banner">
+        <i class="fas fa-check-circle"></i>
+        <span>✅ 已成功部署到 GitHub Pages！访问链接：<strong id="pageUrl"></strong> 
+        <a href="#" id="copyUrlBtn" style="margin-left: 8px;"><i class="fas fa-copy"></i> 复制</a></span>
+    </div>
+
+    <!-- 头部 -->
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <i class="fas fa-plane-departure"></i>
+            </div>
+            <div class="logo-text">
+                <h1>智飞·低价雷达 <span style="font-weight:400; margin-left:4px;">✈️</span></h1>
+                <span>模糊需求 · 特价发现 · 合规跳转</span>
+            </div>
+        </div>
+        <div class="badge-pm">
+            <i class="fas fa-user-tie"></i> AI PM · 同理心 · 数据驱动 · 合规设计
+        </div>
+    </div>
+
+    <!-- 核心模糊搜索卡片 -->
+    <div class="search-card">
+        <div class="fuzzy-label">
+            <h2><i class="fas fa-search" style="margin-right:8px;"></i> 模糊需求搜索</h2>
+            <span class="fuzzy-badge"><i class="fas fa-magic"></i> 支持自然语言 · 目的地/时间/预算模糊</span>
+        </div>
+        
+        <div class="search-box-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="fuzzyInput" placeholder="例如：下个月去海边、3000内飞日本、周末去成都..." value="下个月 温暖的海边 2000内">
+            <button class="search-btn" id="searchBtn"><i class="fas fa-paper-plane"></i> 发现特价</button>
+        </div>
+        
+        <div class="fuzzy-hint">
+            <span><i class="fas fa-umbrella-beach"></i> "温暖海边"</span>
+            <span><i class="fas fa-calendar-week"></i> "五一前后 东南亚"</span>
+            <span><i class="fas fa-coins"></i> "1500以内 看雪"</span>
+        </div>
+
+        <!-- 快速模糊标签 -->
+        <div class="tag-list">
+            <span class="fuzzy-tag" data-query="下个月 去云南 便宜"><i class="fas fa-tag"></i> 下个月·云南</span>
+            <span class="fuzzy-tag" data-query="周末 成都 往返 低价"><i class="fas fa-tag"></i> 周末·成都</span>
+            <span class="fuzzy-tag" data-query="2000内 国际 海岛"><i class="fas fa-tag"></i> 2k内海岛</span>
+            <span class="fuzzy-tag" data-query="清明 赏花 特价"><i class="fas fa-tag"></i> 清明赏花</span>
+            <span class="fuzzy-tag" data-query="北京出发 想去暖和的地方"><i class="fas fa-tag"></i> 北京→暖冬</span>
+        </div>
+    </div>
+
+    <!-- 特价结果展示区 -->
+    <div class="results-header">
+        <h3><i class="fas fa-ticket-alt"></i> 为你发现的超值特价 <span id="resultCount">(6个推荐)</span></h3>
+        <span class="sort-badge"><i class="fas fa-arrow-down-wide-short"></i> 价格从低到高 · 模糊匹配</span>
+    </div>
+
+    <!-- 卡片网格 -->
+    <div id="flightGridContainer" class="flight-grid"></div>
+
+    <!-- 闲鱼优惠提示 -->
+    <div class="tips-panel">
+        <i class="fab fa-sellcast" style="color:#ff7b00;"></i>
+        <div style="flex:1">
+            <strong style="font-size:1rem;">✨ 想再省一笔？试试闲鱼"机票代订/积分兑换"</strong><br>
+            <span style="font-size:0.85rem;">可搜索里程票、酒店券、接送机优惠。请务必注意交易风险，走平台担保。</span>
+        </div>
+        <i class="fas fa-shield-alt" style="color:#2a6f97;"></i>
+    </div>
+
+    <!-- 重要合规与风险提示 -->
+    <div class="risk-footer">
+        <i class="fas fa-balance-scale"></i>
+        <div class="content">
+            <strong>⛑️ 合规与风险提示</strong><br>
+            本平台仅提供特价机票信息聚合与模糊搜索，所有价格仅供参考，实际价格以OTA（携程/飞猪/去哪儿等）为准。跳转链接均为真实官方或联盟合作渠道。<br>
+            <span style="display:inline-block; margin-top:6px;"><i class="fas fa-info-circle"></i> 闲鱼等C2C平台可能存在交易风险，请务必通过平台官方流程交易，警惕诈骗，勿直接转账。智飞不介入任何私下交易，不承担相应责任。</span>
+        </div>
+    </div>
+    <div class="footer-note">
+        <i class="fab fa-github"></i> 部署于 GitHub Pages · 产品经理原型 · 体现用户同理心与合规意识
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+        
+        // 显示当前页面URL（GitHub Pages 地址）
+        function displayPageUrl() {
+            const urlElement = document.getElementById('pageUrl');
+            const currentUrl = window.location.href;
+            urlElement.textContent = currentUrl;
+            
+            // 复制功能
+            document.getElementById('copyUrlBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    alert('✅ 链接已复制到剪贴板！可以分享给用户了。');
+                }).catch(() => {
+                    prompt('请手动复制链接：', currentUrl);
+                });
+            });
+        }
+
+        // ---------- 模拟特价机票库 ----------
+        const mockFlights = [
+            { id:1, from:'北京', to:'三亚', depDate:'2026-05-12', price:890, airline:'南方航空', tags:'海边 温暖 度假', otaUrl:'https://www.ctrip.com/', xianyuQuery:'三亚机票 特价' },
+            { id:2, from:'上海', to:'大阪', depDate:'2026-05-20', price:1480, airline:'春秋航空', tags:'日本 赏花 国际', otaUrl:'https://www.qunar.com/', xianyuQuery:'大阪机票 代订' },
+            { id:3, from:'广州', to:'成都', depDate:'2026-04-25', price:620, airline:'中国国航', tags:'周末 美食 低价', otaUrl:'https://www.fliggy.com/', xianyuQuery:'成都机票' },
+            { id:4, from:'深圳', to:'曼谷', depDate:'2026-05-05', price:1780, airline:'泰国亚航', tags:'东南亚 海岛 国际', otaUrl:'https://www.ctrip.com/', xianyuQuery:'曼谷 特价机票' },
+            { id:5, from:'杭州', to:'昆明', depDate:'2026-04-28', price:560, airline:'长龙航空', tags:'云南 赏花 温暖', otaUrl:'https://www.qunar.com/', xianyuQuery:'昆明 便宜机票' },
+            { id:6, from:'北京', to:'厦门', depDate:'2026-05-01', price:780, airline:'厦门航空', tags:'海边 文艺 周末', otaUrl:'https://www.fliggy.com/', xianyuQuery:'厦门 机票 积分' },
+            { id:7, from:'成都', to:'丽江', depDate:'2026-05-18', price:430, airline:'祥鹏航空', tags:'云南 雪山 便宜', otaUrl:'https://www.ctrip.com/', xianyuQuery:'丽江 特价' },
+            { id:8, from:'上海', to:'札幌', depDate:'2026-06-02', price:2390, airline:'吉祥航空', tags:'北海道 雪 国际', otaUrl:'https://www.qunar.com/', xianyuQuery:'札幌 机票' },
+            { id:9, from:'香港', to:'首尔', depDate:'2026-05-15', price:1320, airline:'大韩航空', tags:'购物 国际 韩流', otaUrl:'https://www.ctrip.com/', xianyuQuery:'首尔 机票' },
+            { id:10,from:'重庆', to:'海口', depDate:'2026-05-08', price:690, airline:'海南航空', tags:'海边 温暖 美食', otaUrl:'https://www.fliggy.com/', xianyuQuery:'海口 便宜' },
+        ];
+
+        const container = document.getElementById('flightGridContainer');
+        const fuzzyInput = document.getElementById('fuzzyInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultCountSpan = document.getElementById('resultCount');
+        const fuzzyTags = document.querySelectorAll('.fuzzy-tag');
+
+        function renderFlights(flightsArray) {
+            if (!flightsArray || flightsArray.length === 0) {
+                container.innerHTML = `<div class="no-result"><i class="fas fa-search" style="font-size:2.5rem; opacity:0.5; margin-bottom:15px; display:block;"></i>没有完全匹配的特价，试试调整模糊词<br>如"海边、温暖、1000内"</div>`;
+                resultCountSpan.textContent = `(0个结果)`;
+                return;
+            }
+
+            let html = '';
+            flightsArray.forEach(f => {
+                const priceFormatted = f.price.toLocaleString();
+                const otaLink = f.otaUrl || '#';
+                const xianyuSearchUrl = `https://s.2.taobao.com/list/list.htm?q=${encodeURIComponent(f.xianyuQuery || f.to + ' 机票')}&search_type=item`;
+                
+                html += `
+                    <div class="flight-card">
+                        <div class="route-line">
+                            <span class="dep"><i class="fas fa-plane-departure"></i> ${f.from}</span>
+                            <i class="fas fa-arrow-right arrow-icon"></i>
+                            <span class="arr"><i class="fas fa-plane-arrival"></i> ${f.to}</span>
+                        </div>
+                        <div class="date-info">
+                            <span><i class="far fa-calendar-alt"></i> ${f.depDate}</span>
+                            <span class="airline"><i class="fas fa-building"></i> ${f.airline}</span>
+                        </div>
+                        <div class="price-section">
+                            <span class="price"><small>¥</small>${priceFormatted}</span>
+                            <span style="background:#e0ebf9; padding:3px 10px; border-radius:20px; font-size:0.7rem;">含税参考</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:#66809c; margin:6px 0 8px;">
+                            <i class="fas fa-tags"></i> ${f.tags}
+                        </div>
+                        <div class="action-buttons">
+                            <a class="btn-ota" href="${otaLink}" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-external-link-alt"></i> 去携程/飞猪下单
+                            </a>
+                            <a class="btn-xianyu" href="${xianyuSearchUrl}" target="_blank" rel="noopener noreferrer" onclick="return confirm('跳转至闲鱼搜索「${f.xianyuQuery || f.to+'机票'}」。\n请注意甄别信息，通过平台交易，谨防诈骗。');">
+                                <i class="fab fa-sellcast"></i> 闲鱼找优惠
+                            </a>
+                        </div>
+                        <div style="margin-top: 10px; font-size:0.7rem; color:#b45f06; display:flex; gap:6px;">
+                            <i class="fas fa-shield"></i><span>风险自负，建议平台交易</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            resultCountSpan.textContent = `(${flightsArray.length}个推荐)`;
+        }
+
+        function fuzzySearch(query) {
+            if (!query.trim()) return mockFlights.slice(0,8);
+            
+            const lowerQ = query.toLowerCase();
+            const budgetMatch = lowerQ.match(/(\d+)\s*[元块内]|(\d+)\s*以内|预算\s*(\d+)/);
+            let maxBudget = Infinity;
+            if (budgetMatch) {
+                const budgetVal = budgetMatch[1] || budgetMatch[2] || budgetMatch[3];
+                maxBudget = parseInt(budgetVal, 10);
+                if (isNaN(maxBudget)) maxBudget = Infinity;
+            }
+
+            const monthMap = {
+                '下个月': 5, '五月':5, '5月':5, '四月':4, '4月':4, '三月':3, '3月':3, '六月':6,
+                '清明':4, '五一':5, '劳动节':5, '端午':6
+            };
+            let targetMonth = null;
+            for (let [key, month] of Object.entries(monthMap)) {
+                if (lowerQ.includes(key)) { targetMonth = month; break; }
+            }
+
+            const themeWords = ['海边','海','温暖','热','沙滩','岛','雪','赏花','樱花','美食','购物','文艺','雪山','云南','日本','泰国','成都','三亚','厦门'];
+            
+            return mockFlights.filter(flight => {
+                if (flight.price > maxBudget) return false;
+                
+                if (targetMonth !== null) {
+                    const flightMonth = parseInt(flight.depDate.split('-')[1], 10);
+                    if (flightMonth !== targetMonth) return false;
+                }
+                
+                const searchText = (flight.from + flight.to + flight.tags + flight.airline + flight.depDate).toLowerCase();
+                const queryWords = lowerQ.split(/\s+/).filter(w => w.length>0);
+                let wordMatch = queryWords.some(word => searchText.includes(word));
+                
+                if (!wordMatch) {
+                    for (let theme of themeWords) {
+                        if (lowerQ.includes(theme) && flight.tags.includes(theme)) {
+                            wordMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if (lowerQ.includes('国际') && flight.tags.includes('国际')) wordMatch = true;
+                if (lowerQ.includes('东南亚') && (flight.to==='曼谷'||flight.to==='新加坡')) wordMatch = true;
+                
+                return wordMatch || queryWords.length===0;
+            }).sort((a,b) => a.price - b.price);
+        }
+
+        function updateResults() {
+            const query = fuzzyInput.value.trim();
+            const filtered = fuzzySearch(query);
+            renderFlights(filtered);
+        }
+
+        searchBtn.addEventListener('click', updateResults);
+        fuzzyInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                updateResults();
+            }
+        });
+
+        fuzzyTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const query = this.getAttribute('data-query') || this.innerText.trim();
+                fuzzyInput.value = query;
+                updateResults();
+            });
+        });
+
+        // 初始化
+        (function initialize() {
+            displayPageUrl();
+            fuzzyInput.value = '下个月 温暖的海边 2000内';
+            const initialFiltered = fuzzySearch(fuzzyInput.value);
+            renderFlights(initialFiltered);
+        })();
+
+    })();
+</script>
+</body>
+</html>
